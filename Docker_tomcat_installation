@@ -1,0 +1,30 @@
+FROM ubuntu:22.04
+
+LABEL maintainer="akhilreddy <akhilreddy135@gmail.com>"
+
+ARG TOMCAT_VERSION=9.0.113
+ARG TOMCAT_ZIP=apache-tomcat-${TOMCAT_VERSION}.zip
+ARG TOMCAT_DIR=/opt/apache-tomcat-${TOMCAT_VERSION}
+ARG TOMCAT_URL=https://dlcdn.apache.org/tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/${TOMCAT_ZIP}
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        wget \
+        openjdk-17-jdk \
+        unzip \
+        ca-certificates && \
+    rm -rf /var/lib/apt/lists/* && \
+    cd /tmp && \
+    wget ${TOMCAT_URL} && \
+    unzip ${TOMCAT_ZIP} -d /opt && \
+    rm -f ${TOMCAT_ZIP} && \
+    chmod +x ${TOMCAT_DIR}/bin/*.sh
+
+EXPOSE 8080
+
+CMD ["bash", "-c", "/opt/apache-tomcat-9.0.113/bin/catalina.sh run"]
+
