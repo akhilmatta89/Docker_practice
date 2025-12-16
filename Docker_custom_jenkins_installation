@@ -2,18 +2,23 @@ FROM ubuntu:22.04
 
 LABEL maintainer="akhil_reddy <akhilreddymatta@gmail.com>"
 
-RUN apt update -y && apt upgrade -y && \
+RUN apt update -y && \
 	echo "Installing Java" && \
-	apt install openjdk-17-jdk -y && \
-	apt install ca-certificates curl gnupg -y && \
+	apt install -y openjdk-17-jdk \
+		ca-certificates \
+		curl \
+		gnupg && \
 	curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null && \
 	echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
 		https://pkg.jenkins.io/debian-stable binary/ | tee \
 		/etc/apt/sources.list.d/jenkins.list > /dev/null && \
 	apt update && \
-	apt install jenkins -y
+	apt install jenkins -y && \
+	rm -rf /var/lib/apt/lists/*
 
+EXPOSE 8080
 
+USER jenkins
 
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV  PATH="$JAVA_HOME/bin:$PATH"
